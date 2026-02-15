@@ -1001,6 +1001,58 @@ namespace video {
     },
     LIMITED_GOP_SIZE | PARALLEL_ENCODING | SINGLE_SLICE_ONLY | NO_RC_BUF_LIMIT
   };
+
+  #ifdef SUNSHINE_BUILD_ROCKCHIP
+  encoder_t rkmpp{
+    "rkmpp"sv,
+    std::make_unique<encoder_platform_formats_avcodec>(
+      AV_HWDEVICE_TYPE_RKMPP,
+      AV_HWDEVICE_TYPE_DRM,
+      AV_PIX_FMT_DRM_PRIME,
+      AV_PIX_FMT_NV12,
+      AV_PIX_FMT_P010,
+      AV_PIX_FMT_NONE,
+      AV_PIX_FMT_NONE,
+      nullptr
+    ),
+    {// rockchip doesn't have av1 encoder
+      {},
+      {},  // SDR-specific options
+      {},  // HDR-specific options
+      {},  // YUV444 SDR-specific options
+      {},  // YUV444 HDR-specific options
+      {},  // Fallback options
+      {},
+    },
+    // rkmpp doesn't have options like presets and tune (for both h264 and h265 encoder), 
+    // so options passed to ffmpeg will be blank at this time. 
+    {
+      // x265's Info SEI is so long that it causes the IDR picture data to be
+      // kicked to the 2nd packet in the frame, breaking Moonlight's parsing logic.
+      // It also looks like gop_size isn't passed on to x265, so we have to set
+      // 'keyint=-1' in the parameters ourselves.
+      {},
+      {},  // SDR-specific options
+      {},  // HDR-specific options
+      {},  // YUV444 SDR-specific options
+      {},  // YUV444 HDR-specific options
+      {},  // Fallback options
+      "hevc_rkmpp"s,
+    },
+    {
+      // Common options
+      {},
+      {},  // SDR-specific options
+      {},  // HDR-specific options
+      {},  // YUV444 SDR-specific options
+      {},  // YUV444 HDR-specific options
+      {},  // Fallback options
+      "h264_rkmpp"s,
+    },
+    PARALLEL_ENCODING | ALWAYS_REPROBE 
+
+  }
+  #endif
 #endif
 
 #ifdef __APPLE__
@@ -1067,6 +1119,9 @@ namespace video {
 #endif
 #ifdef __linux__
     &vaapi,
+  #ifdef SUNSHINE_BUILD_ROCKCHIP
+    &rkmpp,
+  #endif
 #endif
 #ifdef __APPLE__
     &videotoolbox,

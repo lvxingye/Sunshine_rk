@@ -46,4 +46,10 @@ elseif(UNIX)  # Linux
             "Enable building wayland specific code." ON)
     option(SUNSHINE_ENABLE_X11
             "Enable X11 grab if available." ON)
+    option(SUNSHINE_ENABLE_PORTAL
+            "Enable XDG portal grab if available" ON)
+
+    # Enable rkmpp encoder support
+    option(SUNSHINE_ENABLE_ROCKCHIP
+            "Enable rockchip MPP encoder if available" OFF)
 endif()

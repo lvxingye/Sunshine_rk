@@ -146,6 +146,17 @@ if(LIBVA_FOUND)
             "${CMAKE_SOURCE_DIR}/src/platform/linux/vaapi.cpp")
 endif()
 
+# rkmpp support
+if(${SUNSHINE_ENABLE_ROCKCHIP})
+    find_package(rockchip_mpp REQUIRED)
+    find_package(librga REQUIRED)
+else()
+    set(LIBRK_FOUND OFF)
+endif()
+if(LIBRK_FOUND)
+    add_compile_definitions(SUNSHINE_BUILD_ROCKCHIP)
+endif()
+
 # wayland
 if(${SUNSHINE_ENABLE_WAYLAND})
     find_package(Wayland)
