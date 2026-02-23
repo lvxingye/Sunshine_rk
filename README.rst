@@ -1,59 +1,90 @@
-This fork is for rockchip platform only,and only testedon rk3566 chip!!!
+Sunshine RockChip Fork
+======================
 
-Though I've use dedicate ffmpeg version for rockchip and it's able to find rkmpp encoder,
-it occupies cpu a lot just like not using rkmpp but cpu cpu to encode video.
+.. warning:: This fork is for Rockchip platform only and has only been tested on RK3566 chip!
 
-to build this :
-First we need to get build dependencies,
-sudo apt update
-sudo apt install -y\
+**Note on Performance:**
+Although a dedicated FFmpeg version for Rockchip is used and can find the rkmpp encoder,
+it currently occupies CPU significantly, similar to not using rkmpp hardware encoding at all.
+
+Build Instructions
+===================
+
+First, install build dependencies:
+
+.. code-block:: bash
+
+   sudo apt update
+   sudo apt install -y \
       git meson cmake pkg-config gcc libasound2-dev libdrm-dev ninja-build libv4l-dev \
-      libboost-all-dev 
-sudo apt-get install -y \
-            build-essential gcc-10 g++-10 libayatana-appindicator3-dev libxtst-dev wget\
-            libavdevice-dev libcap-dev libcurl4-openssl-dev libdrm-dev libevdev-dev \
-            libminiupnpc-dev libnotify-dev libnuma-dev libopus-dev libpulse-dev \
-            libssl-dev libva-dev libwayland-dev libx11-dev libxcb-shm0-dev \
-            libxcb-xfixes0-dev libxcb1-dev libxfixes-dev libxrandr-dev 
+      libboost-all-dev
+   sudo apt-get install -y \
+      build-essential gcc-10 g++-10 libayatana-appindicator3-dev libxtst-dev wget \
+      libavdevice-dev libcap-dev libcurl4-openssl-dev libdrm-dev libevdev-dev \
+      libminiupnpc-dev libnotify-dev libnuma-dev libopus-dev libpulse-dev \
+      libssl-dev libva-dev libwayland-dev libx11-dev libxcb-shm0-dev \
+      libxcb-xfixes0-dev libxcb1-dev libxfixes-dev libxrandr-dev
 
-Then to build rkmpp and rkrga modules,
-git clone https://github.com/HermanChen/mpp.git rkmpp
-cd rkmpp
-mkdir ./build&&cd build
-mkdir -p rkmpp/rkmpp_build && cd rkmpp/rkmpp_build
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TEST=OFF ..
-sudo make -j$(nproc)
-sudo make install
-git clone -b jellyfin-rga --depth=1 https://github.com/nyanmisaka/rk-mirrors.git rkrga
-cd rkrga
-meson setup ./ rkrga_build --prefix=/usr --libdir=lib --buildtype=release -Dcpp_args=-fpermissive -Dlibdrm=false -Dlibrga_demo=false
-meson configure rkrga_build
-sudo ninja -C rkrga_build install
+Then, build rkmpp and rkrga modules:
 
-Get specific ffmpeg build from lvxingye/build-deps repo ,
-wget https://github.com/lvxingye/build-deps/releases/download/ubuntu-20.04/ffmpeg.tar.gz
-tar -xvf ./ffmpeg.tar.gz
-mv ./ffmpeg_build ./_deps/ffmpeg
+.. code-block:: bash
 
-Clone this fork,
-git clone https://github.com/lvxingye/Sunshine_rk.git
+   git clone https://github.com/HermanChen/mpp.git rkmpp
+   cd rkmpp
+   mkdir ./build && cd build
+   mkdir -p rkmpp/rkmpp_build && cd rkmpp/rkmpp_build
+   cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_SHARED_LIBS=ON -DBUILD_TEST=OFF ..
+   sudo make -j$(nproc)
+   sudo make install
 
-Cmake configure,(disable cuda,and enable rkmpp support)
-cd Sunshine_rk
-cmake -B build/ -S ./ \
-            -DSUNSHINE_ENABLE_CUDA=OFF \
-            -DSUNSHINE_ENABLE_ROCKCHIP=ON \
-            -DFFMPEG_PREPARED_BINARIES="`pwd`/_deps/ffmpeg/"\
-            -DSUNSHINE_ASSETS_DIR=share/sunshine \
-            -DSUNSHINE_EXECUTABLE_PATH=/usr/bin/sunshine 
+.. code-block:: bash
 
-Build sunshine(it's prefferred to use 2 processes, more than 2 could lead to OOM) and package
-cd build
-ninja -C ./ -j2
-cpack -G DEB
+   git clone -b jellyfin-rga --depth=1 https://github.com/nyanmisaka/rk-mirrors.git rkrga
+   cd rkrga
+   meson setup ./ rkrga_build --prefix=/usr --libdir=lib --buildtype=release \
+      -Dcpp_args=-fpermissive -Dlibdrm=false -Dlibrga_demo=false
+   meson configure rkrga_build
+   sudo ninja -C rkrga_build install
 
-Install sunshine
-sudo env "PATH=$PATH" ninja install
+Get specific ffmpeg build from lvxingye/build-deps repo:
+
+.. code-block:: bash
+
+   wget https://github.com/lvxingye/build-deps/releases/download/ubuntu-20.04/ffmpeg.tar.gz
+   tar -xvf ./ffmpeg.tar.gz
+   mv ./ffmpeg_build ./_deps/ffmpeg
+
+Clone this fork:
+
+.. code-block:: bash
+
+   git clone https://github.com/lvxingye/Sunshine_rk.git
+
+Configure with CMake (disable CUDA and enable Rockchip support):
+
+.. code-block:: bash
+
+   cd Sunshine_rk
+   cmake -B build/ -S ./ \
+      -DSUNSHINE_ENABLE_CUDA=OFF \
+      -DSUNSHINE_ENABLE_ROCKCHIP=ON \
+      -DFFMPEG_PREPARED_BINARIES="`pwd`/_deps/ffmpeg/" \
+      -DSUNSHINE_ASSETS_DIR=share/sunshine \
+      -DSUNSHINE_EXECUTABLE_PATH=/usr/bin/sunshine
+
+Build Sunshine (it's preferred to use 2 processes to avoid OOM):
+
+.. code-block:: bash
+
+   cd build
+   ninja -C ./ -j2
+
+Install Sunshine:
+
+.. code-block:: bash
+
+   sudo env "PATH=$PATH" ninja install
 
 
 
