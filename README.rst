@@ -1,3 +1,63 @@
+This fork is for rockchip platform only,and only testedon rk3566 chip!!!
+
+Though I've use dedicate ffmpeg version for rockchip and it's able to find rkmpp encoder,
+it occupies cpu a lot just like not using rkmpp but cpu cpu to encode video.
+
+to build this :
+First we need to get build dependencies,
+sudo apt update
+sudo apt install -y\
+      git meson cmake pkg-config gcc libasound2-dev libdrm-dev ninja-build libv4l-dev \
+      libboost-all-dev 
+sudo apt-get install -y \
+            build-essential gcc-10 g++-10 libayatana-appindicator3-dev libxtst-dev wget\
+            libavdevice-dev libcap-dev libcurl4-openssl-dev libdrm-dev libevdev-dev \
+            libminiupnpc-dev libnotify-dev libnuma-dev libopus-dev libpulse-dev \
+            libssl-dev libva-dev libwayland-dev libx11-dev libxcb-shm0-dev \
+            libxcb-xfixes0-dev libxcb1-dev libxfixes-dev libxrandr-dev 
+
+Then to build rkmpp and rkrga modules,
+git clone https://github.com/HermanChen/mpp.git rkmpp
+cd rkmpp
+mkdir ./build&&cd build
+mkdir -p rkmpp/rkmpp_build && cd rkmpp/rkmpp_build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TEST=OFF ..
+sudo make -j$(nproc)
+sudo make install
+git clone -b jellyfin-rga --depth=1 https://github.com/nyanmisaka/rk-mirrors.git rkrga
+cd rkrga
+meson setup ./ rkrga_build --prefix=/usr --libdir=lib --buildtype=release -Dcpp_args=-fpermissive -Dlibdrm=false -Dlibrga_demo=false
+meson configure rkrga_build
+sudo ninja -C rkrga_build install
+
+Get specific ffmpeg build from lvxingye/build-deps repo ,
+wget https://github.com/lvxingye/build-deps/releases/download/ubuntu-20.04/ffmpeg.tar.gz
+tar -xvf ./ffmpeg.tar.gz
+mv ./ffmpeg_build ./_deps/ffmpeg
+
+Clone this fork,
+git clone https://github.com/lvxingye/Sunshine_rk.git
+
+Cmake configure,(disable cuda,and enable rkmpp support)
+cd Sunshine_rk
+cmake -B build/ -S ./ \
+            -DSUNSHINE_ENABLE_CUDA=OFF \
+            -DSUNSHINE_ENABLE_ROCKCHIP=ON \
+            -DFFMPEG_PREPARED_BINARIES="`pwd`/_deps/ffmpeg/"\
+            -DSUNSHINE_ASSETS_DIR=share/sunshine \
+            -DSUNSHINE_EXECUTABLE_PATH=/usr/bin/sunshine 
+
+Build sunshine(it's prefferred to use 2 processes, more than 2 could lead to OOM) and package
+cd build
+ninja -C ./ -j2
+cpack -G DEB
+
+Install sunshine
+sudo env "PATH=$PATH" ninja install
+
+
+
+
 Overview
 ========
 LizardByte has the full documentation hosted on `Read the Docs <https://sunshinestream.readthedocs.io/>`__.
