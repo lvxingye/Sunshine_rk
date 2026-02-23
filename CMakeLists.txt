@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 # `CMAKE_CUDA_ARCHITECTURES` requires 3.18
 # todo - set this conditionally
 
@@ -13,6 +13,8 @@ set(PROJECT_LONG_DESCRIPTION "Offering low latency, cloud gaming server capabili
 and Nvidia GPUs for hardware encoding. Software encoding is also available. You can connect to Sunshine from any \
 Moonlight client on a variety of devices. A web UI is provided to allow configuration, and client pairing, from \
 your favorite web browser. Pair from the local server or any mobile device.")
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     message(STATUS "Setting build type to 'Release' as none was specified.")

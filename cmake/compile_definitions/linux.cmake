@@ -148,12 +148,13 @@ endif()
 
 # rkmpp support
 if(${SUNSHINE_ENABLE_ROCKCHIP})
-    find_package(rockchip_mpp REQUIRED)
-    find_package(librga REQUIRED)
+    message("a")
+    set(LIBRK_FOUND TRUE)
 else()
     set(LIBRK_FOUND OFF)
 endif()
 if(LIBRK_FOUND)
+    message("b")
     add_compile_definitions(SUNSHINE_BUILD_ROCKCHIP)
 endif()
 

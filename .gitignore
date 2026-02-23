@@ -15,4 +15,7 @@ package-lock.json
 
 # Translations
 *.mo
-*.pot
+*.
+
+_deps/
+_deps/*

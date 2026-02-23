@@ -1006,23 +1006,19 @@ namespace video {
   encoder_t rkmpp{
     "rkmpp"sv,
     std::make_unique<encoder_platform_formats_avcodec>(
-      AV_HWDEVICE_TYPE_RKMPP,
-      AV_HWDEVICE_TYPE_DRM,
+      AV_HWDEVICE_TYPE_NONE,AV_HWDEVICE_TYPE_DRM,
       AV_PIX_FMT_DRM_PRIME,
       AV_PIX_FMT_NV12,
-      AV_PIX_FMT_P010,
-      AV_PIX_FMT_NONE,
-      AV_PIX_FMT_NONE,
+      AV_PIX_FMT_NONE,//Rockchip mpp doesn't support 10bits
       nullptr
     ),
     {// rockchip doesn't have av1 encoder
       {},
       {},  // SDR-specific options
       {},  // HDR-specific options
-      {},  // YUV444 SDR-specific options
-      {},  // YUV444 HDR-specific options
       {},  // Fallback options
-      {},
+      std::nullopt,  // QP rate control fallback
+      ""s
     },
     // rkmpp doesn't have options like presets and tune (for both h264 and h265 encoder), 
     // so options passed to ffmpeg will be blank at this time. 
@@ -1034,9 +1030,8 @@ namespace video {
       {},
       {},  // SDR-specific options
       {},  // HDR-specific options
-      {},  // YUV444 SDR-specific options
-      {},  // YUV444 HDR-specific options
       {},  // Fallback options
+      std::nullopt,  // QP rate control fallback
       "hevc_rkmpp"s,
     },
     {
@@ -1044,14 +1039,13 @@ namespace video {
       {},
       {},  // SDR-specific options
       {},  // HDR-specific options
-      {},  // YUV444 SDR-specific options
-      {},  // YUV444 HDR-specific options
       {},  // Fallback options
+      std::nullopt,  // QP rate control fallback
       "h264_rkmpp"s,
     },
     PARALLEL_ENCODING | ALWAYS_REPROBE 
 
-  }
+  };
   #endif
 #endif
 
